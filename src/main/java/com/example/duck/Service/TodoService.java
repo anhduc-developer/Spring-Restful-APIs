@@ -26,17 +26,22 @@ public class TodoService {
         return todos;
     }
 
-    public void handleUpdateTodo() {
-        Optional<Todo> todoOptional = this.todoRepository.findById(1L);
+    public void handleUpdateTodo(Long id, Todo newTodo) {
+        Optional<Todo> todoOptional = this.todoRepository.findById(id);
         if (todoOptional.isPresent()) {
             Todo currentTodo = todoOptional.get();
-            currentTodo.setCompleted(false);
-            currentTodo.setUsername("@nhDuck");
+            currentTodo.setCompleted(newTodo.isCompleted());
+            currentTodo.setUsername(newTodo.getUsername());
             this.todoRepository.save(currentTodo);
         }
     }
 
-    public void handleDeleteTodo() {
-        this.todoRepository.deleteById(1L);
+    public void handleDeleteTodo(Long id) {
+        this.todoRepository.deleteById(id);
+    }
+
+    public Todo getTodoById(long id) {
+        Optional<Todo> todoOptional = this.todoRepository.findById(id);
+        return todoOptional.isPresent() ? todoOptional.get() : null;
     }
 }
