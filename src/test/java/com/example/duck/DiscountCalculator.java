@@ -1,13 +1,13 @@
 package com.example.duck;
 
 public class DiscountCalculator {
-    public double calculatorDiscount(double totalAmount) {
-        if (totalAmount < 100) {
+    public double calculatorDiscount(long quantity) {
+        if (quantity < 100) {
             return 0;
-        } else if (totalAmount < 100) {
-            return totalAmount * 0.1;
+        } else if (quantity < 500) {
+            return quantity * 0.1;
         } else {
-            return totalAmount * 0.2;
+            return quantity * 0.2;
         }
     }
 }
