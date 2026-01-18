@@ -34,7 +34,6 @@ public class TodoService {
         Optional<Todo> optionalTodo = this.todoRepository.findById(id);
         Todo newTodo = new Todo();
         if (optionalTodo.isPresent()) {
-            Todo oldTodo = optionalTodo.get();
             newTodo.setCompleted(todo.isCompleted());
             newTodo.setUsername(todo.getUsername());
             newTodo.setId(id);

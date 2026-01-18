@@ -1,6 +1,7 @@
 package com.example.duck.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -16,35 +17,33 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> handleGetUsers() {
-        List<User> users = this.userRepository.findAll();
-        return users;
+    public List<User> getAllUsers() {
+        return this.userRepository.findAll();
     }
 
-    public User handleGetUser(Long id) {
-        Optional<User> optionalUser = this.userRepository.findById(id);
-        return optionalUser.isPresent() ? optionalUser.get() : null;
+    public Optional<User> getUserById(Long id) {
+        return this.userRepository.findById(id);
     }
 
-    public User handleCreateUser(User user) {
-        User newUser = new User();
-        newUser.setId(user.getId());
-        newUser.setName(user.getName());
-        newUser.setEmail(user.getEmail());
-        return this.userRepository.save(newUser);
-    }
-
-    public void handleUpdateUser(Long id, User user) {
-        Optional<User> optionalUser = this.userRepository.findById(id);
-        if (optionalUser.isPresent()) {
-            User newUser = optionalUser.get();
-            newUser.setEmail(user.getEmail());
-            newUser.setName(user.getName());
-            this.userRepository.save(newUser);
+    public User createUser(User user) {
+        if (this.userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
         }
+        return this.userRepository.save(user);
     }
 
-    public void handleDeleteUser(Long id) {
+    public User updateUser(Long id, User updateUser) {
+        return this.userRepository.findById(id).map(user -> {
+            user.setName(updateUser.getName());
+            user.setEmail(updateUser.getEmail());
+            return this.userRepository.save(user);
+        }).orElseThrow(() -> new NoSuchElementException("User not found"));
+    }
+
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new NoSuchElementException("User not found!");
+        }
         this.userRepository.deleteById(id);
     }
 }

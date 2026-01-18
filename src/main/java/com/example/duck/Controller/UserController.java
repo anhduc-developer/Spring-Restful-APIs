@@ -1,6 +1,7 @@
 package com.example.duck.Controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,31 +26,31 @@ public class UserController {
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getUsers() {
-        List<User> users = this.userService.handleGetUsers();
+        List<User> users = this.userService.getAllUsers();
         return ResponseEntity.ok().body(users);
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
-        User user = this.userService.handleGetUser(id);
-        return ResponseEntity.ok().body(user);
+    public ResponseEntity<Optional<User>> getUser(@PathVariable Long id) {
+        Optional<User> optionalUser = this.userService.getUserById(id);
+        return ResponseEntity.ok().body(optionalUser);
     }
 
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        User newUser = this.userService.handleCreateUser(user);
+        User newUser = this.userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody User user) {
-        this.userService.handleUpdateUser(id, user);
-        return ResponseEntity.ok().body("Succeed");
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+        User newUser = this.userService.updateUser(id, user);
+        return ResponseEntity.ok().body(newUser);
     }
 
     @DeleteMapping("users/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
-        this.userService.handleDeleteUser(id);
+        this.userService.deleteUser(id);
         return ResponseEntity.ok().body("Delete Succeed");
     }
 }
