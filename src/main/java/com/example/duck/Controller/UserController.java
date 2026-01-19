@@ -24,6 +24,12 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PostMapping("/users")
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        User newUser = this.userService.createUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+    }
+
     @GetMapping("/users")
     public ResponseEntity<List<User>> getUsers() {
         List<User> users = this.userService.getAllUsers();
@@ -31,15 +37,9 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<Optional<User>> getUser(@PathVariable Long id) {
-        Optional<User> optionalUser = this.userService.getUserById(id);
-        return ResponseEntity.ok().body(optionalUser);
-    }
-
-    @PostMapping("/users")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User newUser = this.userService.createUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        return this.userService.getUserById(id).map(user -> ResponseEntity.ok().body(user))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/users/{id}")
@@ -49,8 +49,8 @@ public class UserController {
     }
 
     @DeleteMapping("users/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         this.userService.deleteUser(id);
-        return ResponseEntity.ok().body("Delete Succeed");
+        return ResponseEntity.noContent().build();
     }
 }
