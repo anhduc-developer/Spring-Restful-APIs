@@ -32,7 +32,7 @@ public class UserController {
         User newUser = this.userService.createUser(user);
         var result = new ApiResponse<>(HttpStatus.CREATED, "create User", newUser, null);
         ApiResponse<User> result2 = new ApiResponse<>(HttpStatus.CREATED, "create User", newUser, null);
-        return ResponseEntity.status(HttpStatus.CREATED).body(result2);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @GetMapping("/users")
