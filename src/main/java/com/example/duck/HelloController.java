@@ -2,9 +2,7 @@ package com.example.duck;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import com.example.duck.Entity.Todo;
 import com.example.duck.Entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;

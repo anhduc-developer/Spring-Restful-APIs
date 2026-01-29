@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.duck.Entity.User;
 import com.example.duck.Repository.UserRepository;
-import com.example.duck.Service.UserService;
+import com.example.duck.Service.iplm.UserServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -27,7 +27,7 @@ public class UserServiceTest {
     private UserRepository userRepository;
     // thành phần thật nhưng + phần fake ở trên UserRepository + UserService
     @InjectMocks
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
     @Test
     public void createUser_shouldReturnUser_WhenEmailValid() {
@@ -38,7 +38,7 @@ public class UserServiceTest {
         when(userRepository.existsByEmail(inputUser.getEmail())).thenReturn(false);
         when(userRepository.save(any())).thenReturn(outputUser);
         // act: action - hanh dong la gi
-        User result = this.userService.createUser(inputUser);
+        User result = this.userServiceImpl.createUser(inputUser);
         System.out.println(result);
         // assert: so sanh
         assertEquals(1L, result.getId());
@@ -51,7 +51,7 @@ public class UserServiceTest {
         when(this.userRepository.existsByEmail(inputUser.getEmail())).thenReturn(true);
 
         Exception ex = assertThrows(IllegalArgumentException.class, () -> {
-            this.userService.createUser(inputUser);
+            this.userServiceImpl.createUser(inputUser);
         });
         assertEquals("Email already exists", ex.getMessage());
     }
@@ -65,7 +65,7 @@ public class UserServiceTest {
         // gia lap
         when(this.userRepository.findAll()).thenReturn(outputUsers);
         // action
-        List<User> result = this.userService.getAllUsers();
+        List<User> result = this.userServiceImpl.getAllUsers();
         // assert
         assertEquals(2, result.size());
         assertEquals("duc@gmail.com", result.get(0).getEmail());
@@ -80,7 +80,7 @@ public class UserServiceTest {
         when(this.userRepository.findById(inputId)).thenReturn(userOptionalOutput);
 
         // action
-        Optional<User> result = this.userService.getUserById(inputId);
+        Optional<User> result = this.userServiceImpl.getUserById(inputId);
         // assert
         assertEquals(true, result.isPresent());
     }
@@ -91,7 +91,7 @@ public class UserServiceTest {
         Long inputId = 1L;
         when(this.userRepository.existsById(inputId)).thenReturn(true);
         // action
-        this.userService.deleteUser(inputId);
+        this.userServiceImpl.deleteUser(inputId);
         // assert
         verify(this.userRepository).deleteById(1L);
     }
@@ -104,7 +104,7 @@ public class UserServiceTest {
 
         // action
         Exception ex = assertThrows(NoSuchElementException.class, () -> {
-            this.userService.deleteUser(inputId);
+            this.userServiceImpl.deleteUser(inputId);
         });
 
         // assert
@@ -121,7 +121,7 @@ public class UserServiceTest {
         when(this.userRepository.save(any())).thenReturn(outputUser);
 
         // action
-        User result = this.userService.updateUser(inputId, inputUser);
+        User result = this.userServiceImpl.updateUser(inputId, inputUser);
         // assert
         assertEquals("new", result.getName());
     }
@@ -129,15 +129,13 @@ public class UserServiceTest {
     @Test
     public void updateUser_shouldReturnThrowException_WhenInvalid() {
         // arrange
-        Long inputId = 1L;
-
-        when(this.userRepository.findById(inputId)).thenReturn(Optional.empty());
+        Long inputId = 9L;
 
         // action
         Exception ex = assertThrows(NoSuchElementException.class, () -> {
-            this.userService.deleteUser(inputId);
+            this.userServiceImpl.deleteUser(inputId);
         });
         // assert
-        assertEquals("User not found", ex.getMessage());
+        assertEquals("User not found!", ex.getMessage());
     }
 }

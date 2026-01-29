@@ -1,8 +1,6 @@
 package com.example.duck.Controller;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,8 +11,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.duck.Entity.ApiResponse;
 import com.example.duck.Entity.User;
 import com.example.duck.Service.UserService;
+
+import jakarta.validation.Valid;
 
 @RestController
 public class UserController {
@@ -25,32 +26,46 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<ApiResponse<User>> createUser(@Valid @RequestBody User user) { // valid yeu cau request kiem
+                                                                                         // tra co hop le khong
+
         User newUser = this.userService.createUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
+        var result = new ApiResponse<>(HttpStatus.CREATED, "create User", newUser, null);
+        ApiResponse<User> result2 = new ApiResponse<>(HttpStatus.CREATED, "create User", newUser, null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result2);
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getUsers() {
+    public ResponseEntity<ApiResponse<List<User>>> getUsers() {
         List<User> users = this.userService.getAllUsers();
-        return ResponseEntity.ok().body(users);
+        var result = new ApiResponse<>(HttpStatus.OK, "getAllUsers", users, null);
+        return ResponseEntity.ok().body(result);
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
-        return this.userService.getUserById(id).map(user -> ResponseEntity.ok().body(user))
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ApiResponse<User>> getUser(@PathVariable Long id) {
+        return this.userService.getUserById(id).map(user -> {
+            var response = new ApiResponse<>(HttpStatus.OK, "getUserById", user, null);
+            return ResponseEntity.ok().body(response);
+        })
+                .orElseGet(() -> {
+                    ApiResponse<User> errorResponse = new ApiResponse<>(HttpStatus.NOT_FOUND,
+                            "Không tìm thấy u ser với ID: " + id, null, "USER_NOT_FOUND");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+                });
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<ApiResponse<User>> updateUser(@PathVariable Long id, @RequestBody User user) {
         User newUser = this.userService.updateUser(id, user);
-        return ResponseEntity.ok().body(newUser);
+        var result = new ApiResponse<>(HttpStatus.OK, "updateUser", newUser, null);
+        return ResponseEntity.ok().body(result);
     }
 
-    @DeleteMapping("users/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<ApiResponse<User>> deleteUser(@PathVariable Long id) {
         this.userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+        ApiResponse<User> result = new ApiResponse<User>(HttpStatus.NO_CONTENT, "deleteUser", null, null);
+        return ResponseEntity.ok().body(result);
     }
 }
