@@ -40,10 +40,15 @@ public class GlobalException {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    /* handle the rest exceptions */
+    /*
+     * handle the rest exceptions
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleAllException(Exception ex) {
-        var result = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, "handleAllException", null, ex.getMessage());
+        var result = new ApiResponse<>(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), null,
+                "INTERNAL_SERVER_ERROR");
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
     }
+
 }

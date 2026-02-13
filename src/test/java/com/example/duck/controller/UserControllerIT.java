@@ -97,7 +97,7 @@ public class UserControllerIT {
         User user = new User(1L, "duckkk", "duckkk@gmail.com");
         User userInput = this.userRepository.saveAndFlush(user);
         User updateUser = new User(userInput.getId(), "new-duckkk",
-                "new-duckkk@gmail.com");
+                "new-duckkkk@gmail.com");
         String resultString = this.mockMvc
                 .perform(put("/users/{id}",
                         userInput.getId()).contentType(MediaType.APPLICATION_JSON)
